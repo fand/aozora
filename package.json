@@ -1,0 +1,51 @@
+{
+  "name": "@fand/aozora",
+  "description": "Get random texts from aozora bunko",
+  "version": "0.0.1",
+  "author": "fand",
+  "bugs": {
+    "url": "https://github.com/fand/aozora/issues"
+  },
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "babel-eslint": "^4.1.3",
+    "eslint": "^1.5.1",
+    "espower-babel": "^3.3.0",
+    "isparta": "^3.1.0",
+    "mocha": "^2.3.3",
+    "power-assert": "^1.0.1"
+  },
+  "files": [
+    "package.json",
+    "README.md",
+    "index.js",
+    "lib"
+  ],
+  "homepage": "https://github.com/fand/aozora",
+  "keywords": [
+    "aozora",
+    "text",
+    "test"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fand/aozora.git"
+  },
+  "scripts": {
+    "build": "babel src --out-dir lib",
+    "cover": "babel-node $(npm bin)/isparta cover --report text --report html _mocha",
+    "lint": "eslint src test",
+    "prepublish": "rm -rf lib && npm run lint && npm run test && npm run build",
+    "test": "mocha --compilers js:espower-babel/guess",
+    "travis": "npm run lint && npm run test"
+  },
+  "dependencies": {
+    "@fand/promisify": "0.0.3",
+    "axios": "^0.9.0",
+    "csv": "^0.4.6",
+    "jszip": "^2.5.0",
+    "progress": "^1.1.8"
+  }
+}
