@@ -3,6 +3,7 @@
   "description": "Get random texts from aozora bunko",
   "version": "0.0.1",
   "author": "fand",
+  "bin": "./bin/cli.js",
   "bugs": {
     "url": "https://github.com/fand/aozora/issues"
   },
