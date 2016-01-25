@@ -32,19 +32,50 @@ const sequelize = new Sequelize('aozora', '', '', {
 // '出版社名'
 // '入力に使用した版'
 // '校正に使用した版'
+function rowToWork (row) {
+  return {
+    authorId         : row[0],
+    authorName       : row[1],
+    uuid             : row[2],
+    title            : row[3],
+    kanaType         : row[4],
+    translaterName   : row[5],
+    inputterName     : row[6],
+    proofreaderName  : row[7],
+    state            : row[8],
+    stateDate        : row[9],
+    originalBook     : row[10],
+    publisherName    : row[11],
+    inputEdition     : row[12],
+    proofreadEdition : row[13],
+  };
+}
 
 const Author = sequelize.define('author', {
   uuid : Sequelize.INTEGER,
   name : Sequelize.STRING,
 });
 
-Promise.all([readCSV(), Author.sync()]).then(() => {
+const Work = sequelize.define('work', {
+  uuid           : Sequelize.INTEGER,
+  title          : Sequelize.STRING,
+  kanaType       : Sequelize.STRING,
+  translaterName : Sequelize.STRING,
+  state          : Sequelize.STRING,
+});
+
+Promise.all([readCSV(), Author.sync(), Work.sync()]).then(() => {
   const authorIds = {};
   return data.reduce((prev, [uuid, name]) => prev.then(() => {
     if (authorIds[uuid]) { return true; }
 
     authorIds[uuid] = true;
     return Author.create({uuid, name});
+  }), Promise.resolve());
+})
+.then(() => {
+  return data.reduce((prev, row) => prev.then(() => {
+    return Work.create(rowToWork(row));
   }), Promise.resolve());
 })
 .then(() => {
