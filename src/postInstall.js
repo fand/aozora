@@ -52,16 +52,15 @@ function rowToWork (row) {
 }
 
 const Author = sequelize.define('author', {
-  uuid : Sequelize.INTEGER,
+  uuid : { type : Sequelize.UUID, primaryKey : true },
   name : Sequelize.STRING,
 });
 
 const Work = sequelize.define('work', {
-  uuid           : Sequelize.INTEGER,
+  uuid           : { type : Sequelize.UUID, primaryKey : true },
   title          : Sequelize.STRING,
-  kanaType       : Sequelize.STRING,
+  kanaType       : Sequelize.ENUM('新字新仮名', '新字旧仮名', '旧字新仮名', '旧字旧仮名', 'その他'),
   translaterName : Sequelize.STRING,
-  state          : Sequelize.STRING,
 });
 
 Promise.all([readCSV(), Author.sync(), Work.sync()]).then(() => {
