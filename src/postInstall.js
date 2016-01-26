@@ -91,7 +91,7 @@ const Page = sequelize.define('page', {
   translaterName : Sequelize.STRING,
 });
 
-Promise.all([readCSV(), Author.sync(), Work.sync(), Page.sync()]).then(() => {
+Promise.all([readCSV(), sequelize.truncate(), Author.sync(), Work.sync(), Page.sync()]).then(() => {
   log('Installing authors data');
 
   const authorIds = {};
