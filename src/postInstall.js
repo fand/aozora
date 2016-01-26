@@ -41,8 +41,8 @@ const sequelize = new Sequelize('aozora', '', '', {
 
 function rowToAuthor (row) {
   return {
-    uuid  : row[0],
-    title : row[1],
+    uuid : row[0],
+    name : row[1],
   };
 }
 
