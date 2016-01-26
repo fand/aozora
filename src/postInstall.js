@@ -1,8 +1,14 @@
-import fs        from 'fs';
-import { parse } from 'csv';
-import p         from '@fand/promisify';
+import fs           from 'fs';
+import { parse }    from 'csv';
+import p            from '@fand/promisify';
+import dedent       from 'dedent';
+import { padStart } from 'lodash';
 
 import Sequelize from 'sequelize';
+
+function log (str) {
+  process.stdout.write(str);
+}
 
 let data;
 function readCSV () {
@@ -86,39 +92,72 @@ const Page = sequelize.define('page', {
 });
 
 Promise.all([readCSV(), Author.sync(), Work.sync(), Page.sync()]).then(() => {
+  log('Installing authors data');
+
   const authorIds = {};
-  return data.reduce((prev, row) => prev.then(() => {
+  return data.reduce((prev, row, i) => prev.then(() => {
+    if (i % 100 === 0) { log('.'); }
+
     const { uuid, name } = rowToAuthor(row);
 
     if (authorIds[uuid]) { return true; }
     authorIds[uuid] = true;
 
     return Author.create({ uuid, name });
-  }), Promise.resolve());
+  }), Promise.resolve())
+  .then(() => {
+    log('DONE\n');
+  });
 })
 .then(() => {
+  log('Installing works data');
+
   const workIds = {};
-  return data.reduce((prev, row) => prev.then(() => {
+  return data.reduce((prev, row, i) => prev.then(() => {
+    if (i % 100 === 0) { log('.'); }
+
     const { uuid, title } = rowToWork(row);
 
     if (workIds[uuid]) { return true; }
     workIds[uuid] = true;
 
     return Work.create({ uuid, title });
-  }), Promise.resolve());
-})
-.then(() => {
-  return data.reduce((prev, row) => prev.then(() => {
-    const { workId, authorId, kanaType, translaterName } = rowToPage(row);
-    return Page.create({ workId, authorId, kanaType, translaterName })
-      .catch(e => console.log(e));
-  }), Promise.resolve());
-})
-.then(() => {
-  Author.findAll({
-    attributes : [[sequelize.fn('COUNT', sequelize.col('name')), 'authors']],
-  })
-  .then((res) => {
-    console.log(res);
+  }), Promise.resolve())
+  .then(() => {
+    log('DONE\n');
   });
+})
+.then(() => {
+  log('Installing pages data');
+
+  return data.reduce((prev, row, i) => prev.then(() => {
+    if (i % 100 === 0) { log('.'); }
+
+    const { workId, authorId, kanaType, translaterName } = rowToPage(row);
+    return Page.create({ workId, authorId, kanaType, translaterName });
+  }), Promise.resolve())
+  .then(() => {
+    log('DONE\n');
+  });
+})
+.then(() => {
+  return Promise.all([
+    sequelize.query('SELECT count(*) as count FROM authors').then(x => x[0][0].count),
+    sequelize.query('SELECT count(*) as count FROM works').then(x => x[0][0].count),
+    sequelize.query('SELECT count(*) as count FROM pages').then(x => x[0][0].count),
+  ])
+  .then(([ authors, works, pages ]) => {
+    const length = Math.max(authors, works, pages).toString().length;
+    const pad = str => padStart(str, length);
+
+    console.log(dedent`
+      #### aozora INSTALLED ####
+      authors : ${pad(authors)}
+      works   : ${pad(works)}
+      pages   : ${pad(pages)}
+    `);
+  });
+})
+.catch((err) => {
+  console.log(err);
 });
