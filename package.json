@@ -40,7 +40,8 @@
     "lint": "eslint src test",
     "prepublish": "rm -rf lib && npm run lint && npm run test && npm run build",
     "test": "mocha --compilers js:espower-babel/guess",
-    "travis": "npm run lint && npm run test"
+    "travis": "npm run lint && npm run test",
+    "postinstall": "node script/postInstall.js"
   },
   "dependencies": {
     "@fand/promisify": "0.0.3",
