@@ -95,7 +95,7 @@
     "no-sync"             : 1,
 
     // Stylistic Issues
-    "array-bracket-spacing"       : [2, "never"],
+    "array-bracket-spacing"       : [1, "never"],
     "block-spacing"               : [2, "always"],
     "brace-style"                 : [2, "stroustrup", { "allowSingleLine": true }],
     "camelcase"                   : [2, {"properties": "always"}],
@@ -112,7 +112,7 @@
     ],
     "linebreak-style"             : [2, "unix"],
     "max-nested-callbacks"        : [2, 3],
-    "new-cap"                     : 2,
+    "new-cap"                     : 1,
     "new-parens"                  : 2,
     "newline-after-var"           : 0,
     "no-array-constructor"        : 2,

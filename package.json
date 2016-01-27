@@ -1,11 +1,22 @@
 {
-  "name": "@fand/aozora",
-  "description": "Get random texts from aozora bunko",
+  "name": "aozora",
+  "description": "CLI for aozora-bunko",
   "version": "0.0.1",
   "author": "fand",
   "bin": "./bin/cli.js",
   "bugs": {
     "url": "https://github.com/fand/aozora/issues"
+  },
+  "dependencies": {
+    "@fand/promisify": "0.0.3",
+    "axios": "^0.9.0",
+    "csv": "^0.4.6",
+    "dedent": "^0.6.0",
+    "jszip": "^2.5.0",
+    "lodash": "^4.0.1",
+    "progress": "^1.1.8",
+    "sequelize": "^3.18.0",
+    "sqlite3": "^3.1.1"
   },
   "devDependencies": {
     "babel": "^5.8.23",
@@ -25,8 +36,8 @@
   "homepage": "https://github.com/fand/aozora",
   "keywords": [
     "aozora",
-    "text",
-    "test"
+    "test",
+    "text"
   ],
   "license": "MIT",
   "main": "index.js",
@@ -38,20 +49,9 @@
     "build": "babel src --out-dir lib",
     "cover": "babel-node $(npm bin)/isparta cover --report text --report html _mocha",
     "lint": "eslint src test",
+    "postinstall": "node script/postInstall.js",
     "prepublish": "rm -rf lib && npm run lint && npm run test && npm run build",
     "test": "mocha --compilers js:espower-babel/guess",
-    "travis": "npm run lint && npm run test",
-    "postinstall": "node script/postInstall.js"
-  },
-  "dependencies": {
-    "@fand/promisify": "0.0.3",
-    "axios": "^0.9.0",
-    "csv": "^0.4.6",
-    "dedent": "^0.6.0",
-    "jszip": "^2.5.0",
-    "lodash": "^4.0.1",
-    "progress": "^1.1.8",
-    "sequelize": "^3.18.0",
-    "sqlite3": "^3.1.1"
+    "travis": "npm run lint && npm run test"
   }
 }
