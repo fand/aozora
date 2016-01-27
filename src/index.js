@@ -1,10 +1,9 @@
-import fs           from 'fs';
-import { parse }    from 'csv';
-import p            from '@fand/promisify';
-import dedent       from 'dedent';
+import Sequelize    from 'sequelize';
 import { padStart } from 'lodash';
 
-import Sequelize from 'sequelize';
+import AuthorModel from './Author';
+import WorkModel   from './Work';
+import PageModel   from './Page';
 
 const sequelize = new Sequelize('aozora', '', '', {
   dialect : 'sqlite',
@@ -12,13 +11,19 @@ const sequelize = new Sequelize('aozora', '', '', {
   storage : './aozora.db',
 });
 
-export function findWorkById (workId) {
-  const workIdStr = `${workId}`;
-  return init().then(() => {
-    for (let i = 0, len = data.length; i < len; i++) {
-      if (workIdStr === data[i][2]) {
-        return data[i];
-      }
-    }
+const Author = sequelize.import('author', AuthorModel);
+const Work   = sequelize.import('work', WorkModel);
+const Page   = sequelize.import('page', PageModel);
+
+const authorId       = process.argv[2];
+const authorIdPadded = padStart(authorId, 6, '0');
+
+Promise.all([Author.sync(), Work.sync(), Page.sync()]).then(() => {
+  return Page.findAll({ where : { authorId } });
+})
+.then((pages) => {
+  pages.forEach((page) => {
+    const url = `http://www.aozora.gr.jp/cards/${authorIdPadded}/card${page.workId}.html`;
+    console.log(url);
   });
-}
+});
