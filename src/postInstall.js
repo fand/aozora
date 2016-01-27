@@ -70,54 +70,50 @@ function rowToPage (row) {
   };
 }
 
+function forEachAuthors (callback) {
+  return data.reduce((prev, row, i) => prev.then(() => callback(rowToAuthor(row), i)), Promise.resolve());
+}
+
+function forEachWorks (callback) {
+  return data.reduce((prev, row, i) => prev.then(() => callback(rowToWork(row), i)), Promise.resolve());
+}
+
+function forEachPages (callback) {
+  return data.reduce((prev, row, i) => prev.then(() => callback(rowToPage(row), i)), Promise.resolve());
+}
+
 Promise.all([readCSV(), sequelize.truncate(), Author.sync(), Work.sync(), Page.sync()]).then(() => {
   log('Installing authors data');
 
-  const authorIds = {};
-  return data.reduce((prev, row, i) => prev.then(() => {
+  const done = {};
+  return forEachAuthors((author, i) => {
     if (i % 100 === 0) { log('.'); }
 
-    const { uuid, name } = rowToAuthor(row);
-
-    if (authorIds[uuid]) { return true; }
-    authorIds[uuid] = true;
-
-    return Author.create({ uuid, name });
-  }), Promise.resolve())
-  .then(() => {
-    log('DONE\n');
-  });
+    done[author.uuid] = done[author.uuid] || Author.create(author);
+    return done[author.uuid];
+  })
+  .then(() => log('DONE\n'));
 })
 .then(() => {
   log('Installing works data');
 
-  const workIds = {};
-  return data.reduce((prev, row, i) => prev.then(() => {
+  const done = {};
+  return forEachWorks((work, i) => {
     if (i % 100 === 0) { log('.'); }
 
-    const { uuid, title } = rowToWork(row);
-
-    if (workIds[uuid]) { return true; }
-    workIds[uuid] = true;
-
-    return Work.create({ uuid, title });
-  }), Promise.resolve())
-  .then(() => {
-    log('DONE\n');
-  });
+    done[work.uuid] = done[work.uuid] || Work.create(work);
+    return done[work.uuid];
+  })
+  .then(() => log('DONE\n'));
 })
 .then(() => {
   log('Installing pages data');
 
-  return data.reduce((prev, row, i) => prev.then(() => {
+  return forEachPages((page, i) => {
     if (i % 100 === 0) { log('.'); }
-
-    const { workId, authorId, kanaType, translaterName } = rowToPage(row);
-    return Page.create({ workId, authorId, kanaType, translaterName });
-  }), Promise.resolve())
-  .then(() => {
-    log('DONE\n');
-  });
+    return Page.create(page);
+  })
+  .then(() => log('DONE\n'));
 })
 .then(() => {
   return Promise.all([
