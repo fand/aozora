@@ -1,11 +1,11 @@
 import AuthorModel from './Author';
 import WorkModel   from './Work';
 
-export default function PageModel (sequelize, DataTypes) {
+export default function CardModel (sequelize, DataTypes) {
   const Author = sequelize.import('author', AuthorModel);
   const Work   = sequelize.import('work', WorkModel);
 
-  return sequelize.define('page', {
+  return sequelize.define('card', {
     workId : {
       type : DataTypes.UUID,
       references : {

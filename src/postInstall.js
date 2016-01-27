@@ -2,11 +2,11 @@ import Sequelize    from 'sequelize';
 import { padStart } from 'lodash';
 import dedent       from 'dedent';
 
-import { readCSV, forEachAuthors, forEachWorks, forEachPages } from './CSVParser';
+import { readCSV, forEachAuthors, forEachWorks, forEachCards } from './CSVParser';
 
-import AuthorModel from './Author';
-import WorkModel   from './Work';
-import PageModel   from './Page';
+import AuthorModel from './models/Author';
+import WorkModel   from './models/Work';
+import CardModel   from './models/Card';
 
 function log (str) {
   process.stdout.write(str);
@@ -20,10 +20,10 @@ const sequelize = new Sequelize('aozora', '', '', {
 
 const Author = sequelize.import('author', AuthorModel);
 const Work   = sequelize.import('work', WorkModel);
-const Page   = sequelize.import('page', PageModel);
+const Card   = sequelize.import('card', CardModel);
 
 readCSV('./list_person_all.utf8.csv')
-  .then(() => Promise.all([sequelize.truncate(), Author.sync(), Work.sync(), Page.sync()]))
+  .then(() => Promise.all([sequelize.truncate(), Author.sync(), Work.sync(), Card.sync()]))
   .then(() => {
     log('Installing authors data');
 
@@ -49,11 +49,11 @@ readCSV('./list_person_all.utf8.csv')
     .then(() => log('DONE\n'));
   })
   .then(() => {
-    log('Installing pages data');
+    log('Installing cards data');
 
-    return forEachPages((page, i) => {
+    return forEachCards((card, i) => {
       if (i % 100 === 0) { log('.'); }
-      return Page.create(page);
+      return Card.create(card);
     })
     .then(() => log('DONE\n'));
   })
@@ -61,17 +61,17 @@ readCSV('./list_person_all.utf8.csv')
     return Promise.all([
       sequelize.query('SELECT count(*) as count FROM authors').then(x => x[0][0].count),
       sequelize.query('SELECT count(*) as count FROM works').then(x => x[0][0].count),
-      sequelize.query('SELECT count(*) as count FROM pages').then(x => x[0][0].count),
+      sequelize.query('SELECT count(*) as count FROM cards').then(x => x[0][0].count),
     ])
-    .then(([ authors, works, pages ]) => {
-      const length = Math.max(authors, works, pages).toString().length;
+    .then(([ authors, works, cards ]) => {
+      const length = Math.max(authors, works, cards).toString().length;
       const pad = str => padStart(str, length);
 
       console.log(dedent`
         #### aozora INSTALLED ####
         authors : ${pad(authors)}
         works   : ${pad(works)}
-        pages   : ${pad(pages)}
+        cards   : ${pad(cards)}
       `);
     });
   })

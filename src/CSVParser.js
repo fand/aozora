@@ -39,7 +39,7 @@ function rowToWork (row) {
   };
 }
 
-function rowToPage (row) {
+function rowToCard (row) {
   return {
     authorId       : row[0],
     workId         : row[2],
@@ -56,6 +56,6 @@ export function forEachWorks (callback) {
   return data.reduce((prev, row, i) => prev.then(() => callback(rowToWork(row), i)), Promise.resolve());
 }
 
-export function forEachPages (callback) {
-  return data.reduce((prev, row, i) => prev.then(() => callback(rowToPage(row), i)), Promise.resolve());
+export function forEachCards (callback) {
+  return data.reduce((prev, row, i) => prev.then(() => callback(rowToCard(row), i)), Promise.resolve());
 }

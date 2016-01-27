@@ -1,9 +1,9 @@
 import Sequelize    from 'sequelize';
 import { padStart } from 'lodash';
 
-import AuthorModel from './Author';
-import WorkModel   from './Work';
-import PageModel   from './Page';
+import AuthorModel from './models/Author';
+import WorkModel   from './models/Work';
+import CardModel   from './models/Card';
 
 const sequelize = new Sequelize('aozora', '', '', {
   dialect : 'sqlite',
@@ -13,17 +13,17 @@ const sequelize = new Sequelize('aozora', '', '', {
 
 const Author = sequelize.import('author', AuthorModel);
 const Work   = sequelize.import('work', WorkModel);
-const Page   = sequelize.import('page', PageModel);
+const Card   = sequelize.import('card', CardModel);
 
 const authorId       = process.argv[2];
 const authorIdPadded = padStart(authorId, 6, '0');
 
-Promise.all([Author.sync(), Work.sync(), Page.sync()]).then(() => {
-  return Page.findAll({ where : { authorId } });
+Promise.all([Author.sync(), Work.sync(), Card.sync()]).then(() => {
+  return Card.findAll({ where : { authorId } });
 })
-.then((pages) => {
-  pages.forEach((page) => {
-    const url = `http://www.aozora.gr.jp/cards/${authorIdPadded}/card${page.workId}.html`;
+.then((cards) => {
+  cards.forEach((card) => {
+    const url = `http://www.aozora.gr.jp/cards/${authorIdPadded}/card${card.workId}.html`;
     console.log(url);
   });
 });
