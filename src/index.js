@@ -1,19 +1,16 @@
-import fs from 'fs';
-import { parse } from 'csv';
-import p from '@fand/promisify';
+import fs           from 'fs';
+import { parse }    from 'csv';
+import p            from '@fand/promisify';
+import dedent       from 'dedent';
+import { padStart } from 'lodash';
 
-let data;
+import Sequelize from 'sequelize';
 
-const init = function () {
-  if (data) {
-    return Promise.resolve();
-  }
-
-  return p(fs.readFile)('./list_person_all.utf8.csv')
-    .then((file) => p(parse, {})(file))
-    .then((_data) => data = _data)
-    .catch((err) => { throw err; });
-};
+const sequelize = new Sequelize('aozora', '', '', {
+  dialect : 'sqlite',
+  logging : false,
+  storage : './aozora.db',
+});
 
 export function findWorkById (workId) {
   const workIdStr = `${workId}`;

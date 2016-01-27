@@ -6,6 +6,10 @@ import { padStart } from 'lodash';
 
 import Sequelize from 'sequelize';
 
+import AuthorModel from './Author';
+import WorkModel   from './Work';
+import PageModel   from './Page';
+
 function log (str) {
   process.stdout.write(str);
 }
@@ -23,6 +27,10 @@ const sequelize = new Sequelize('aozora', '', '', {
   logging : false,
   storage : './aozora.db',
 });
+
+const Author = sequelize.import('author', AuthorModel);
+const Work   = sequelize.import('work', WorkModel);
+const Page   = sequelize.import('page', PageModel);
 
 // '人物ID'
 // '著者名'
@@ -61,35 +69,6 @@ function rowToPage (row) {
     translaterName : row[5],
   };
 }
-
-const Author = sequelize.define('author', {
-  uuid : { type : Sequelize.UUID, primaryKey : true },
-  name : Sequelize.STRING,
-});
-
-const Work = sequelize.define('Work', {
-  uuid : { type : Sequelize.UUID, primaryKey : true },
-  title : Sequelize.STRING,
-});
-
-const Page = sequelize.define('page', {
-  workId : {
-    type : Sequelize.UUID,
-    references : {
-      model : Work,
-      key   : 'uuid',
-    },
-  },
-  authorId : {
-    type       : Sequelize.UUID,
-    references : {
-      model : Author,
-      key   : 'uuid',
-    },
-  },
-  kanaType       : Sequelize.ENUM('新字新仮名', '新字旧仮名', '旧字新仮名', '旧字旧仮名', 'その他'),
-  translaterName : Sequelize.STRING,
-});
 
 Promise.all([readCSV(), sequelize.truncate(), Author.sync(), Work.sync(), Page.sync()]).then(() => {
   log('Installing authors data');
