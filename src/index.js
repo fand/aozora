@@ -1,26 +1,8 @@
-import Sequelize    from 'sequelize';
-import { padStart } from 'lodash';
-
-import AuthorModel from './models/Author';
-import WorkModel   from './models/Work';
-import CardModel   from './models/Card';
-
-const sequelize = new Sequelize('aozora', '', '', {
-  dialect : 'sqlite',
-  logging : false,
-  storage : './aozora.db',
-});
-
-const Author = sequelize.import('author', AuthorModel);
-const Work   = sequelize.import('work', WorkModel);
-const Card   = sequelize.import('card', CardModel);
-
-const init = function () {
-  return Promise.all([Author.sync(), Work.sync(), Card.sync()]);
-};
+// import { padStart } from 'lodash';
+import * as DB from './DB';
 
 function showAuthorById (authorId) {
-  return Author.find({ where : { uuid : authorId } })
+  return DB.Author.find({ where : { uuid : authorId } })
     .then((author) => {
       console.log(author.get('name'));
     })
@@ -31,7 +13,7 @@ function showAuthorById (authorId) {
 }
 
 function showAuthorByName (authorName) {
-  return Author.findAll({ where : { name : { $like : `%${authorName}%` } } })
+  return DB.Author.findAll({ where : { name : { $like : `%${authorName}%` } } })
     .then((authors) => {
       if (authors.length === 0) {
         return console.log('No author found');
@@ -49,7 +31,7 @@ function showAuthorByName (authorName) {
  * @param {string} authorIdOrName
  */
 export function showAuthor (authorIdOrName) {
-  init().then(() => {
+  DB.init().then(() => {
     if (/^\d+$/.test(authorIdOrName)) {
       return showAuthorById(authorIdOrName);
     }
