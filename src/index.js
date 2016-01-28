@@ -1,26 +1,54 @@
 // import { padStart } from 'lodash';
-import * as DB from './DB';
+
 import * as Authors from './services/Author';
+import * as Works   from './services/Work';
+// import * as Cards   from './services/Card';
 
 function showAuthorById (authorId) {
   return Authors.findAuthorById(authorId)
     .then((author) => {
-      console.log(author.get('name'));
+      console.log(author.get('uuid'), author.get('name'));
     })
     .catch((e) => {
       console.error(e);
-      console.log(`No author found for uuid : ${authorId}`);
+      console.log(`No authors found for uuid : ${authorId}`);
     });
 }
 
-function showAuthorByName (authorName) {
+function showAuthorsByName (authorName) {
   return Authors.findAuthorsByName(authorName)
     .then((authors) => {
       if (authors.length === 0) {
-        return console.log('No author found');
+        return console.log(`No authors found for name "${authorName}"`);
       }
 
-      authors.forEach(a => console.log(a.get('name')));
+      authors.forEach(a => console.log(a.get('uuid'), a.get('name')));
+    })
+    .catch((e) => {
+      console.log('>>>>>>>>>error');
+      console.log(e);
+    });
+}
+
+function showWorkById (workId) {
+  return Works.findWorkById(workId)
+    .then((work) => {
+      console.log(work.get('uuid'), work.get('title'));
+    })
+    .catch((e) => {
+      console.error(e);
+      console.log(`No works found for uuid : ${workId}`);
+    });
+}
+
+function showWorksByTitle (workTitle) {
+  return Works.findWorksByTitle(workTitle)
+    .then((works) => {
+      if (works.length === 0) {
+        return console.log(`No works found for title "${workTitle}"`);
+      }
+
+      works.forEach(w => console.log(w.get('uuid'), w.get('title')));
     })
     .catch((e) => {
       console.log('>>>>>>>>>error');
@@ -32,14 +60,12 @@ function showAuthorByName (authorName) {
  * @param {string} authorIdOrName
  */
 export function showAuthor (authorIdOrName) {
-  DB.init().then(() => {
-    if (/^\d+$/.test(authorIdOrName)) {
-      return showAuthorById(authorIdOrName);
-    }
-    else {
-      return showAuthorByName(authorIdOrName);
-    }
-  });
+  if (/^\d+$/.test(authorIdOrName)) {
+    return showAuthorById(authorIdOrName);
+  }
+  else {
+    return showAuthorsByName(authorIdOrName);
+  }
 
   // const authorIdPadded = padStart(authorIdOrName, 6, '0');
   //
@@ -59,7 +85,12 @@ export function showAuthor (authorIdOrName) {
  * @param {string} workIdOrTitle
  */
 export function showWork (workIdOrTitle) {
-  console.log(`showWork : ${workIdOrTitle}`);
+  if (/^\d+$/.test(workIdOrTitle)) {
+    return showWorkById(workIdOrTitle);
+  }
+  else {
+    return showWorksByTitle(workIdOrTitle);
+  }
 }
 
 /**
