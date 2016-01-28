@@ -1,19 +1,20 @@
 // import { padStart } from 'lodash';
 import * as DB from './DB';
+import * as Authors from './services/Author';
 
 function showAuthorById (authorId) {
-  return DB.Author.find({ where : { uuid : authorId } })
+  return Authors.findAuthorById(authorId)
     .then((author) => {
       console.log(author.get('name'));
     })
     .catch((e) => {
-      console.log('>>>>>>>>>error');
-      console.log(e);
+      console.error(e);
+      console.log(`No author found for uuid : ${authorId}`);
     });
 }
 
 function showAuthorByName (authorName) {
-  return DB.Author.findAll({ where : { name : { $like : `%${authorName}%` } } })
+  return Authors.findAuthorsByName(authorName)
     .then((authors) => {
       if (authors.length === 0) {
         return console.log('No author found');
