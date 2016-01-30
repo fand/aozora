@@ -2,7 +2,7 @@
 
 import * as Authors from './services/Author';
 import * as Works   from './services/Work';
-// import * as Cards   from './services/Card';
+import * as Cards   from './services/Card';
 
 
 import Table from 'cli-table2';
@@ -37,10 +37,28 @@ function showWorks (works) {
   console.log(table.toString());
 }
 
+function showWorksForAuthors (authors) {
+  authors.reduce((prev, author) => prev.then(() => {
+    showAuthors([author]);
+
+    return Cards.findCardsByAuthorId(author.get('uuid'))
+      .then((cards) => {
+        const workIds = cards.map(card => card.get('workId'));
+        return Works.findWorksByIds(workIds);
+      })
+      .then((works) => {
+        showWorks(works);
+      })
+      .catch((err) => {
+        console.log(err.stack);
+      });
+  }), Promise.resolve());
+}
+
 function showAuthorById (authorId) {
   return Authors.findAuthorById(authorId)
     .then((author) => {
-      showAuthors([author]);
+      return showWorksForAuthors([author]);
     })
     .catch((e) => {
       console.error(e);
@@ -48,13 +66,19 @@ function showAuthorById (authorId) {
     });
 }
 
-function showAuthorsByName (authorName) {
+function showAuthorsByName (authorName, isVorbose) {
   return Authors.findAuthorsByName(authorName)
     .then((authors) => {
       if (authors.length === 0) {
         return console.log(`No authors found for name "${authorName}"`);
       }
-      showAuthors(authors);
+
+      if (isVorbose) {
+        return showWorksForAuthors(authors);
+      }
+      else {
+        return showAuthors(authors);
+      }
     })
     .catch((e) => {
       console.log('>>>>>>>>>error');
@@ -90,12 +114,12 @@ function showWorksByTitle (workTitle) {
 /**
  * @param {string} authorIdOrName
  */
-export function showAuthor (authorIdOrName) {
+export function showAuthor (authorIdOrName, isVerbose) {
   if (/^\d+$/.test(authorIdOrName)) {
-    return showAuthorById(authorIdOrName);
+    return showAuthorById(authorIdOrName, isVerbose);
   }
   else {
-    return showAuthorsByName(authorIdOrName);
+    return showAuthorsByName(authorIdOrName, isVerbose);
   }
 
   // const authorIdPadded = padStart(authorIdOrName, 6, '0');
@@ -115,12 +139,12 @@ export function showAuthor (authorIdOrName) {
 /**
  * @param {string} workIdOrTitle
  */
-export function showWork (workIdOrTitle) {
+export function showWork (workIdOrTitle, isVerbose) {
   if (/^\d+$/.test(workIdOrTitle)) {
-    return showWorkById(workIdOrTitle);
+    return showWorkById(workIdOrTitle, isVerbose);
   }
   else {
-    return showWorksByTitle(workIdOrTitle);
+    return showWorksByTitle(workIdOrTitle, isVerbose);
   }
 }
 

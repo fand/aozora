@@ -6,6 +6,12 @@ export function findWorkById (workId) {
   });
 }
 
+export function findWorksByIds (workIds) {
+  return DB.init().then(() => {
+    return DB.Work.findAll({ where : { uuid : { $in : workIds } } });
+  });
+}
+
 export function findWorksByTitle (workTitle) {
   return DB.init().then(() => {
     return DB.Work.findAll({ where : { title : { $like : `%${workTitle}%` } } });
