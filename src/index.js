@@ -1,10 +1,4 @@
-import axios        from 'axios';
-import cheerio      from 'cheerio';
-import Table        from 'cli-table2';
-import URL          from 'url';
-
-import { Iconv } from 'iconv';
-const sjis2utf8 = new Iconv('SHIFT_JIS', 'UTF-8//TRANSLIT//IGNORE');
+import Table from 'cli-table2';
 
 import * as Authors from './services/Author';
 import * as Works   from './services/Work';
@@ -92,22 +86,7 @@ function showAuthorsByName (authorName, isVorbose) {
 
 function showWorkById (workId) {
   return Fetcher.fetchCardPageByWorkId(workId)
-    .then((res) => {
-      const $ = cheerio.load(res.data);
-      const links = $('.download a').map((i, e) => $(e).attr('href')).toArray();
-      const link = links.filter(l => l.match(/.html$/))[0];
-
-      return axios.get(URL.resolve(res.config.url, link), {
-        responseType      : 'arraybuffer',
-        transformResponse : [(data) => {
-          return sjis2utf8.convert(data).toString();
-        }],
-      });
-    })
-    .then((res) => {
-      const $ = cheerio.load(res.data);
-      return $('.main_text').text();
-    })
+    .then(Fetcher.fetchTextFromCardPage)
     .then((body) => {
       return body.replace(/［＃.*?］/g, '');
     })
@@ -120,7 +99,7 @@ function showWorkById (workId) {
 function showWorksByTitle (workTitle) {
   return Works.findWorksByTitle(workTitle)
     .then((works) => {
-      if (works.length === 0) {
+      if (works.length === 0) {o
         return console.log(`No works found for title "${workTitle}"`);
       }
       showWorks(works);
@@ -141,19 +120,6 @@ export function showAuthor (authorIdOrName, isVerbose) {
   else {
     return showAuthorsByName(authorIdOrName, isVerbose);
   }
-
-  // const authorIdPadded = padStart(authorIdOrName, 6, '0');
-  //
-  // init().then(() => {
-  //   return Card.findAll({ where : { authorId : authorIdOrName } });
-  // })
-  // .then((cards) => {
-  //   cards.forEach((card) => {
-  //     const url = `http://www.aozora.gr.jp/cards/${authorIdPadded}/card${card.workId}.html`;
-  //     console.log(url);
-  //   });
-  // });
-
 }
 
 /**

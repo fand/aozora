@@ -1,5 +1,10 @@
+import URL          from 'url';
 import axios        from 'axios';
+import cheerio      from 'cheerio';
 import { padStart } from 'lodash';
+
+import { Iconv } from 'iconv';
+const sjis2utf8 = new Iconv('SHIFT_JIS', 'UTF-8//TRANSLIT//IGNORE');
 
 import * as Cards from './services/Card';
 
@@ -28,4 +33,25 @@ export function fetchCards (cards) {
 export function fetchCardPageByWorkId (workId) {
   return Cards.findCardsByWorkId(workId)
     .then(fetchCards);
+}
+
+export function fetchTextFromCardPage (cardPage) {
+  return Promise.resolve().then(() => {
+    const $     = cheerio.load(cardPage.data);
+    const links = $('.download a').map((i, e) => $(e).attr('href')).toArray();
+    const link  = links.filter(l => l.match(/.html$/))[0];
+
+    const textUrl = URL.resolve(cardPage.config.url, link);
+
+    return axios.get(textUrl, {
+      responseType      : 'arraybuffer',
+      transformResponse : [(data) => {
+        return sjis2utf8.convert(data).toString();
+      }],
+    });
+  })
+  .then((res) => {
+    const $ = cheerio.load(res.data);
+    return $('.main_text').text();
+  });
 }
