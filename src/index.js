@@ -1,43 +1,12 @@
-import Table from 'cli-table2';
-
 import * as Authors from './services/Author';
 import * as Works   from './services/Work';
 import * as Cards   from './services/Card';
 import * as Fetcher from './Fetcher';
-
-function showAuthors (authors) {
-  const table = new Table({
-    head      : ['UUID', 'Name'],
-    colWidths : [10, 60],
-  });
-
-  authors.forEach(a => {
-    table.push(
-        [a.get('uuid'), a.get('name')]
-    );
-  });
-
-  console.log(table.toString());
-}
-
-function showWorks (works) {
-  const table = new Table({
-    head      : ['UUID', 'Title'],
-    colWidths : [10, 60],
-  });
-
-  works.forEach(w => {
-    table.push(
-        [w.get('uuid'), w.get('title')]
-    );
-  });
-
-  console.log(table.toString());
-}
+import * as Table   from './Table';
 
 function showWorksForAuthors (authors) {
   authors.reduce((prev, author) => prev.then(() => {
-    showAuthors([author]);
+    Table.showAuthors([author]);
 
     return Cards.findCardsByAuthorId(author.get('uuid'))
       .then((cards) => {
@@ -45,7 +14,7 @@ function showWorksForAuthors (authors) {
         return Works.findWorksByIds(workIds);
       })
       .then((works) => {
-        showWorks(works);
+        Table.showWorks(works);
       });
   }), Promise.resolve());
 }
@@ -71,7 +40,7 @@ function showAuthorsByName (authorName, isVorbose) {
         return showWorksForAuthors(authors);
       }
       else {
-        return showAuthors(authors);
+        return Table.showAuthors(authors);
       }
     });
 }
@@ -93,7 +62,7 @@ function showWorksByTitle (workTitle) {
       if (works.length === 0) {
         throw new Error(`No works found for title "${workTitle}"`);
       }
-      showWorks(works);
+      Table.showWorks(works);
     });
 }
 
