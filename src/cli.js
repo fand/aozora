@@ -9,7 +9,8 @@ else if (argv.w) {
   Aozora.showWork(argv.w, argv.v).catch(e => console.error(e));
 }
 else if (argv.r) {
-  Aozora.random(argv.r).catch(e => console.error(e));
+  const length = parseInt(argv.r, 10);
+  Aozora.random(length).catch(e => console.error(e));
 }
 else {
   console.log(dedent`

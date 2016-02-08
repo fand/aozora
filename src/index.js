@@ -19,14 +19,14 @@ function showWorksForAuthors (authors) {
   }), Promise.resolve());
 }
 
-function showWorkText (work) {
+function showWorkText (work, length) {
   return Fetcher.fetchCardPageByWorkId(work.uuid)
     .then(Fetcher.fetchTextFromCardPage)
     .then((body) => {
       return body.replace(/［＃.*?］/g, '');
     })
     .then((body) => {
-      console.log(body);
+      console.log(body.slice(0, length || body.length).trim());
     });
 }
 
@@ -87,5 +87,7 @@ export function showWork (workIdOrTitle) {
  * @param {Number} length
  */
 export function random (length) {
-  console.log(`random : ${length}`);
+  return Works.getRandomWork().then((work) => {
+    return showWorkText(work, length);
+  });
 }
