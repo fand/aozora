@@ -1,17 +1,15 @@
-import { padStart } from 'lodash';
-import axios from 'axios';
-import cheerio from 'cheerio';
-import URL from 'url';
+import axios        from 'axios';
+import cheerio      from 'cheerio';
+import Table        from 'cli-table2';
+import URL          from 'url';
+
 import { Iconv } from 'iconv';
 const sjis2utf8 = new Iconv('SHIFT_JIS', 'UTF-8//TRANSLIT//IGNORE');
-import fs from 'fs';
 
 import * as Authors from './services/Author';
 import * as Works   from './services/Work';
 import * as Cards   from './services/Card';
-
-
-import Table from 'cli-table2';
+import * as Fetcher from './Fetcher';
 
 function showAuthors (authors) {
   const table = new Table({
@@ -93,34 +91,12 @@ function showAuthorsByName (authorName, isVorbose) {
 }
 
 function showWorkById (workId) {
-  return Cards.findCardsByWorkId(workId)
-    .then((cards) => {
-      return new Promise((resolve, reject) => {
-        let resolved;
-        cards.reduce((done, card) => done.then(() => {
-          if (resolved) { return Promise.resolve(); }
-
-          const authorIdPadded = padStart(card.get('authorId'), 6, '0');
-          const url = `http://www.aozora.gr.jp/cards/${authorIdPadded}/card${card.workId}.html`;
-          return axios.get(url).then((res) => {
-            resolved = res;
-          });
-        }), Promise.resolve())
-        .then(() => {
-          if (resolved) {
-            resolve(resolved);
-          }
-          else {
-            reject();
-          }
-        })
-        .catch(reject);
-      });
-    })
+  return Fetcher.fetchCardPageByWorkId(workId)
     .then((res) => {
       const $ = cheerio.load(res.data);
       const links = $('.download a').map((i, e) => $(e).attr('href')).toArray();
       const link = links.filter(l => l.match(/.html$/))[0];
+
       return axios.get(URL.resolve(res.config.url, link), {
         responseType      : 'arraybuffer',
         transformResponse : [(data) => {
@@ -137,16 +113,8 @@ function showWorkById (workId) {
     })
     .then((body) => {
       console.log(body);
-    });
-
-  // return Works.findWorkById(workId)
-  //   .then((work) => {
-  //     showWorks([work]);
-  //   })
-  //   .catch((e) => {
-  //     console.error(e);
-  //     console.log(`No works found for uuid : ${workId}`);
-  //   });
+    })
+    .catch(e => console.log(e));
 }
 
 function showWorksByTitle (workTitle) {
