@@ -19,34 +19,8 @@ function showWorksForAuthors (authors) {
   }), Promise.resolve());
 }
 
-function showAuthorById (authorId) {
-  return Authors.findAuthorById(authorId)
-    .then((author) => {
-      return showWorksForAuthors([author]);
-    })
-    .catch(() => {
-      throw new Error(`No authors found for uuid : ${authorId}`);
-    });
-}
-
-function showAuthorsByName (authorName, isVorbose) {
-  return Authors.findAuthorsByName(authorName)
-    .then((authors) => {
-      if (authors.length === 0) {
-        throw new Error(`No authors found for name "${authorName}"`);
-      }
-
-      if (isVorbose) {
-        return showWorksForAuthors(authors);
-      }
-      else {
-        return Table.showAuthors(authors);
-      }
-    });
-}
-
-function showWorkById (workId) {
-  return Fetcher.fetchCardPageByWorkId(workId)
+function showWorkText (work) {
+  return Fetcher.fetchCardPageByWorkId(work.uuid)
     .then(Fetcher.fetchTextFromCardPage)
     .then((body) => {
       return body.replace(/［＃.*?］/g, '');
@@ -56,38 +30,53 @@ function showWorkById (workId) {
     });
 }
 
-function showWorksByTitle (workTitle) {
-  return Works.findWorksByTitle(workTitle)
-    .then((works) => {
-      if (works.length === 0) {
-        throw new Error(`No works found for title "${workTitle}"`);
-      }
-      Table.showWorks(works);
-    });
-}
-
 /**
  * @param {string} authorIdOrName
  */
 export function showAuthor (authorIdOrName, isVerbose) {
-  if (/^\d+$/.test(authorIdOrName)) {
-    return showAuthorById(authorIdOrName, isVerbose);
-  }
-  else {
-    return showAuthorsByName(authorIdOrName, isVerbose);
-  }
+  return Promise.resolve().then(() => {
+    if (/^\d+$/.test(authorIdOrName)) {
+      return Authors.findAuthorById(authorIdOrName).then(x => [x]);
+    }
+    else {
+      return Authors.findAuthorsByName(authorIdOrName);
+    }
+  })
+  .then((authors) => {
+    if (authors.length === 0) {
+      throw new Error(`No authors found for "${authorIdOrName}"`);
+    }
+
+    if (authors.length === 1 || isVerbose) {
+      return showWorksForAuthors(authors);
+    }
+    else {
+      return Table.showAuthors(authors);
+    }
+  });
 }
 
 /**
  * @param {string} workIdOrTitle
  */
-export function showWork (workIdOrTitle, isVerbose) {
-  if (/^\d+$/.test(workIdOrTitle)) {
-    return showWorkById(workIdOrTitle, isVerbose);
-  }
-  else {
-    return showWorksByTitle(workIdOrTitle, isVerbose);
-  }
+export function showWork (workIdOrTitle) {
+  return Promise.resolve().then(() => {
+    if (/^\d+$/.test(workIdOrTitle)) {
+      return Works.findWorkById(workIdOrTitle).then(x => [x]);
+    }
+    else {
+      return Works.findWorksByTitle(workIdOrTitle);
+    }
+  })
+  .then((works) => {
+    if (works.length === 0) {
+      throw new Error(`No works found for "${workIdOrTitle}"`);
+    }
+    if (works.length === 1) {
+      return showWorkText(works[0]);
+    }
+    return Table.showWorks(works);
+  });
 }
 
 /**
