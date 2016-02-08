@@ -6,7 +6,7 @@ import CardModel   from './models/Card';
 export const sequelize = new Sequelize('aozora', '', '', {
   dialect : 'sqlite',
   logging : false,
-  storage : './aozora.db',
+  storage : `${__dirname}/../aozora.db`,
 });
 
 export const Author = sequelize.import('author', AuthorModel);
