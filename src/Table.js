@@ -29,3 +29,18 @@ export function showWorks (works) {
 
   console.log(table.toString());
 }
+
+export function showCards (cards) {
+  const table = new CliTable({
+    head      : ['WorkId', 'Title', 'Author'],
+    colWidths : [10, 60, 20],
+  });
+
+  cards.forEach(c => {
+    table.push(
+        [c.get('workId'), c.get('workTitle'), c.get('authorName')]
+    );
+  });
+
+  console.log(table.toString());
+}

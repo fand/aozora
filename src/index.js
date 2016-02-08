@@ -75,7 +75,11 @@ export function showWork (workIdOrTitle) {
     if (works.length === 1) {
       return showWorkText(works[0]);
     }
-    return Table.showWorks(works);
+
+    return Cards.findCardsByWorkIds(works.map(w => w.uuid))
+      .then((cards) => {
+        return Table.showCards(cards);
+      });
   });
 }
 

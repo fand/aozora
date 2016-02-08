@@ -11,3 +11,9 @@ export function findCardsByWorkId (workId) {
     return DB.Card.findAll({ where : { workId : workId } });
   });
 }
+
+export function findCardsByWorkIds (workIds) {
+  return DB.init().then(() => {
+    return DB.Card.findAll({ where : { workId : { $in: workIds } } });
+  });
+}

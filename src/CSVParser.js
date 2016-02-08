@@ -42,7 +42,9 @@ function rowToWork (row) {
 function rowToCard (row) {
   return {
     authorId       : row[0],
+    authorName     : row[1],
     workId         : row[2],
+    workTitle      : row[3],
     kanaType       : row[4],
     translaterName : row[5],
   };

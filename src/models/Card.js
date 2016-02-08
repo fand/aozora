@@ -13,13 +13,15 @@ export default function CardModel (sequelize, DataTypes) {
         key   : 'uuid',
       },
     },
-    authorId : {
+    workTitle : DataTypes.STRING,
+    authorId  : {
       type       : DataTypes.UUID,
       references : {
         model : Author,
         key   : 'uuid',
       },
     },
+    authorName     : DataTypes.STRING,
     kanaType       : DataTypes.ENUM('新字新仮名', '新字旧仮名', '旧字新仮名', '旧字旧仮名', 'その他'),
     translaterName : DataTypes.STRING,
   });
