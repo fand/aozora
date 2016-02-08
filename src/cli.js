@@ -3,13 +3,13 @@ import dedent      from 'dedent';
 
 const argv = require('minimist')(process.argv.slice(2));
 if (argv.a) {
-  Aozora.showAuthor(argv.a, argv.v);
+  Aozora.showAuthor(argv.a, argv.v).catch(e => console.error(e));
 }
 else if (argv.w) {
-  Aozora.showWork(argv.w, argv.v);
+  Aozora.showWork(argv.w, argv.v).catch(e => console.error(e));
 }
 else if (argv.r) {
-  Aozora.random(argv.r);
+  Aozora.random(argv.r).catch(e => console.error(e));
 }
 else {
   console.log(dedent`
