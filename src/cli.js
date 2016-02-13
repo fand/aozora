@@ -1,6 +1,6 @@
 import * as Aozora from './index';
 import dedent      from 'dedent';
-import inquirer    from 'inquirer';
+import Inquirer    from './Inquirer';
 
 const argv = require('minimist')(process.argv.slice(2));
 if (argv.a) {
@@ -20,23 +20,5 @@ else if (argv.h) {
   `);
 }
 else {
-  inquirer.prompt([{
-    type :'list',
-    name : 'selection',
-    message : 'Search a work by',
-    choices : ['Author', 'Title'],
-  }], (answers) => {
-    if (answers.selection === 'Author') {
-      inquirer.prompt({
-        type    : 'input',
-        name    : 'authorName',
-        message : 'Input author name',
-      }, (answers) => {
-        console.log('authro', answers);
-      });
-    }
-    else {
-      console.log('bye bye(=^・^=)');
-    }
-  });
+  Inquirer.inquire().catch(e => console.error(e));
 }
