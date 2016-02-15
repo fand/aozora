@@ -36,7 +36,10 @@
     "package.json",
     "README.md",
     "index.js",
-    "lib"
+    "lib",
+    "bin",
+    "script",
+    "list_person_all.utf8.csv"
   ],
   "homepage": "https://github.com/fand/aozora",
   "keywords": [
