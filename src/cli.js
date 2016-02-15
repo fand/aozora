@@ -10,11 +10,14 @@ else if (argv.w) {
 }
 else if (argv.r) {
   const length = parseInt(argv.r, 10);
-  Aozora.random(length).catch(e => console.error(e));
+  Aozora.showRandom(length).catch(e => console.error(e));
+}
+else if (argv.h) {
+  console.log(dedent`
+    Usage:
+      aozora [-a authorId|authorName] [-w workId|workTitle] [-r length] ...
+  `);
 }
 else {
-  console.log(dedent`
-    Usage:  aozora [-a author] [option] ...
-
-  `);
+  Aozora.showInteractive().catch(e => console.error(e));
 }
