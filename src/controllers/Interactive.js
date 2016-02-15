@@ -38,7 +38,7 @@ function askWorksForAuthor (author) {
     return p(inquirer.prompt)({
       type    : 'list',
       name    : 'card',
-      message : 'Select work',
+      message : 'Select title',
       choices : cards.map(c => ({
         name  : c.get('workTitle'),
         value : c,
@@ -66,7 +66,7 @@ function askCard () {
       return p(inquirer.prompt)({
         type    : 'list',
         name    : 'card',
-        message : 'Select work',
+        message : 'Select title',
         choices : cards.map(c => ({
           name  : `${c.get('authorName')} : ${c.get('workTitle')}`,
           value : c,
@@ -83,7 +83,7 @@ export function showInteractive () {
   return p(inquirer.prompt)([{
     type    : 'list',
     name    : 'selection',
-    message : 'Search a work by',
+    message : 'Search works by',
     choices : ['Author', 'Title'],
   }])
   .then((answers) => {
