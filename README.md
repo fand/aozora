@@ -36,3 +36,12 @@ Print works that matches title.
 
 Print random text from Aozora Bunko.
 If length is specified, first (length) characters of the text will be printed.
+
+
+# LICENSE
+
+`list_person_all.csv` is provided by 青空文庫 and licensed under CC BY 2.1 JP.
+`list_person_all.utf8.csv` is UTF-8 version of `lis_person_all.csv`, so it's licensed under CC BY 2.1 JP too.
+Ⓒ 青空文庫 2016
+
+All other codes are under [MIT License](http://fand.mit-license.org/).
