@@ -55,3 +55,7 @@ export function fetchTextFromCardPage (cardPage) {
     return $('.main_text').text();
   });
 }
+
+export function fetchTextByWorkId (workId) {
+  return fetchCardPageByWorkId(workId).then(fetchTextFromCardPage);
+}

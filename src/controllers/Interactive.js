@@ -46,11 +46,8 @@ function askWorksForAuthor (author) {
       })),
     });
   })
-  .then(({ card }) => {
-    return Fetcher.fetchCardPageByWorkId(card.get('workId'))
-      .then(Fetcher.fetchTextFromCardPage)
-      .then(View.showWorkText);
-  });
+  .then(({ card }) => Fetcher.fetchTextByWorkId(card.get('workId')))
+  .then(View.showWorkText);
 }
 
 function askCard () {
@@ -76,11 +73,8 @@ function askCard () {
           short : `${c.get('authorName')} : ${c.get('workTitle')}`,
         })),
       })
-      .then(({ card }) => {
-        return Fetcher.fetchCardPageByWorkId(card.get('workId'))
-          .then(Fetcher.fetchTextFromCardPage)
-          .then(View.showWorkText);
-      });
+      .then(({ card }) => Fetcher.fetchTextByWorkId(card.get('workId')))
+      .then(View.showWorkText);
     }
   });
 }

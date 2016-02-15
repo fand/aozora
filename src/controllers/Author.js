@@ -5,7 +5,7 @@ import * as View    from '../View';
 
 function showWorksForAuthors (authors) {
   authors.reduce((prev, author) => prev.then(() => {
-    Table.showAuthors([author]);
+    View.showAuthors([author]);
 
     return Cards.findCardsByAuthorId(author.get('uuid'))
       .then((cards) => {

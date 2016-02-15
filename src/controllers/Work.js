@@ -20,9 +20,7 @@ export function showWork (workIdOrTitle) {
       throw new Error(`No works found for "${workIdOrTitle}"`);
     }
     if (works.length === 1) {
-      return Fetcher.fetchCardPageByWorkId(work[0].uuid)
-        .then(Fetcher.fetchTextFromCardPage)
-        .then(body => View.showWorkText(works[0]));
+      return Fetcher.fetchTextByWorkId(works[0].uuid).then(View.showWorkText);
     }
 
     return Cards.findCardsByWorkIds(works.map(w => w.uuid))
