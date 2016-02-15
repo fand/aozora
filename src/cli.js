@@ -1,6 +1,5 @@
 import * as Aozora from './index';
 import dedent      from 'dedent';
-import Inquirer    from './Inquirer';
 
 const argv = require('minimist')(process.argv.slice(2));
 if (argv.a) {
@@ -11,7 +10,7 @@ else if (argv.w) {
 }
 else if (argv.r) {
   const length = parseInt(argv.r, 10);
-  Aozora.random(length).catch(e => console.error(e));
+  Aozora.showRandom(length).catch(e => console.error(e));
 }
 else if (argv.h) {
   console.log(dedent`
@@ -20,5 +19,5 @@ else if (argv.h) {
   `);
 }
 else {
-  Inquirer.inquire().catch(e => console.error(e));
+  Aozora.showInteractive().catch(e => console.error(e));
 }
