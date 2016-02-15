@@ -1,7 +1,7 @@
 import * as Authors from '../services/Author';
 import * as Works   from '../services/Work';
 import * as Cards   from '../services/Card';
-import * as Table   from '../Table';
+import * as View    from '../View';
 
 function showWorksForAuthors (authors) {
   authors.reduce((prev, author) => prev.then(() => {
@@ -13,7 +13,7 @@ function showWorksForAuthors (authors) {
         return Works.findWorksByIds(workIds);
       })
       .then((works) => {
-        Table.showWorks(works);
+        View.showWorks(works);
       });
   }), Promise.resolve());
 }
@@ -39,7 +39,7 @@ export function showAuthor (authorIdOrName, isVerbose) {
       return showWorksForAuthors(authors);
     }
     else {
-      return Table.showAuthors(authors);
+      return View.showAuthors(authors);
     }
   });
 }

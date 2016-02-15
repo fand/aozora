@@ -44,3 +44,11 @@ export function showCards (cards) {
 
   console.log(table.toString());
 }
+
+export function showWorkText (body, length) {
+  console.log(
+    body.replace(/［＃.*］/g, '')
+    .slice(0, length || body.length)
+    .trim()
+  );
+}

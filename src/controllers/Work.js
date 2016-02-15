@@ -1,18 +1,7 @@
 import * as Works   from '../services/Work';
 import * as Cards   from '../services/Card';
 import * as Fetcher from '../Fetcher';
-import * as Table   from '../Table';
-
-function showWorkText (work, length) {
-  return Fetcher.fetchCardPageByWorkId(work.uuid)
-    .then(Fetcher.fetchTextFromCardPage)
-    .then((body) => {
-      return body.replace(/［＃.*］/g, '');
-    })
-    .then((body) => {
-      console.log(body.slice(0, length || body.length).trim());
-    });
-}
+import * as View    from '../View';
 
 /**
  * @param {string} workIdOrTitle
@@ -31,12 +20,14 @@ export function showWork (workIdOrTitle) {
       throw new Error(`No works found for "${workIdOrTitle}"`);
     }
     if (works.length === 1) {
-      return showWorkText(works[0]);
+      return Fetcher.fetchCardPageByWorkId(work[0].uuid)
+        .then(Fetcher.fetchTextFromCardPage)
+        .then(body => View.showWorkText(works[0]));
     }
 
     return Cards.findCardsByWorkIds(works.map(w => w.uuid))
       .then((cards) => {
-        return Table.showCards(cards);
+        return View.showCards(cards);
       });
   });
 }

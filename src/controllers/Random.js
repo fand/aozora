@@ -1,5 +1,6 @@
 import * as Works   from '../services/Work';
 import * as Fetcher from '../Fetcher';
+import * as View    from '../View';
 
 function showWorkText (work, length) {
   return Fetcher.fetchCardPageByWorkId(work.uuid)

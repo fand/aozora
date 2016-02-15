@@ -3,6 +3,7 @@ import * as Authors from '../services/Author';
 import * as Works   from '../services/Work';
 import * as Cards   from '../services/Card';
 import * as Fetcher from '../Fetcher';
+import * as View    from '../View';
 
 /**
  * Promisify inquirer.
@@ -48,12 +49,7 @@ function askWorksForAuthor (author) {
   .then(({ card }) => {
     return Fetcher.fetchCardPageByWorkId(card.get('workId'))
       .then(Fetcher.fetchTextFromCardPage)
-      .then((body) => {
-        return body.replace(/［＃.*］/g, '').trim();
-      })
-      .then((body) => {
-        console.log(body);
-      });
+      .then(View.showWorkText);
   });
 }
 
@@ -83,12 +79,7 @@ function askCard () {
       .then(({ card }) => {
         return Fetcher.fetchCardPageByWorkId(card.get('workId'))
           .then(Fetcher.fetchTextFromCardPage)
-          .then((body) => {
-            return body.replace(/［＃.*］/g, '').trim();
-          })
-          .then((body) => {
-            console.log(body);
-          });
+          .then(View.showWorkText);
       });
     }
   });
