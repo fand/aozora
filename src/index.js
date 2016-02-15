@@ -23,7 +23,7 @@ function showWorkText (work, length) {
   return Fetcher.fetchCardPageByWorkId(work.uuid)
     .then(Fetcher.fetchTextFromCardPage)
     .then((body) => {
-      return body.replace(/［＃.*?］/g, '');
+      return body.replace(/［＃.*］/g, '');
     })
     .then((body) => {
       console.log(body.slice(0, length || body.length).trim());

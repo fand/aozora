@@ -23,8 +23,7 @@ const Inquirer = {
         return Inquirer.askAuthor().then(Inquirer.askWorksForAuthor);
       }
       else {
-        console.log('bye bye(=^・^=)');
-        return;
+        return Inquirer.askCard();
       }
     });
   },
@@ -69,11 +68,48 @@ const Inquirer = {
       return Fetcher.fetchCardPageByWorkId(card.get('workId'))
         .then(Fetcher.fetchTextFromCardPage)
         .then((body) => {
-          return body.replace(/［＃.*］/g, '');
+          return body.replace(/［＃.*］/g, '').trim();
         })
         .then((body) => {
           console.log(body);
         });
+    });
+  },
+
+  askCard () {
+    return p(inquirer.prompt)({
+      type    : 'input',
+      name    : 'workTitle',
+      message : 'Input title',
+    })
+    .then(({ workTitle }) => Works.findWorksByTitle(workTitle))
+    .then((works) => Cards.findCardsByWorkIds(works.map(w => w.get('uuid'))))
+    .then((cards) => {
+      if (cards.length === 1) {
+        return cards[0];
+      }
+      else {
+        return p(inquirer.prompt)({
+          type    : 'list',
+          name    : 'card',
+          message : 'Select work',
+          choices : cards.map(c => ({
+            name  : `${c.get('authorName')} : ${c.get('workTitle')}`,
+            value : c,
+            short : `${c.get('authorName')} : ${c.get('workTitle')}`,
+          })),
+        })
+        .then(({ card }) => {
+          return Fetcher.fetchCardPageByWorkId(card.get('workId'))
+            .then(Fetcher.fetchTextFromCardPage)
+            .then((body) => {
+              return body.replace(/［＃.*］/g, '').trim();
+            })
+            .then((body) => {
+              console.log(body);
+            });
+        });
+      }
     });
   },
 
