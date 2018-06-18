@@ -1,4 +1,4 @@
-import CliTable from 'cli-table2';
+import CliTable from 'cli-table3';
 
 export function showAuthors (authors) {
   const table = new CliTable({
